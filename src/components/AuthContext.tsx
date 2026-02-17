@@ -3,6 +3,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 // --- Interfaces ---
 
 export interface User {
+  phone: ReactNode;
   id: number;
   name: string;
   username: string;
