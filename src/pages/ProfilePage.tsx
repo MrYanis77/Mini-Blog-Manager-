@@ -1,4 +1,3 @@
-import React from "react";
 import { useAuth } from "../components/AuthContext";
 import { Card, CardHeader, CardBody, Divider, Button, Chip, User } from "@heroui/react";
 import { useNavigate } from "react-router-dom";

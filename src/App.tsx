@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {  HashRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from "./components/AuthContext";
 import { HeroUIProvider } from "@heroui/system";
 import Navigation from './components/Navigation';
@@ -12,7 +12,7 @@ export function App() {
   return (
     <HeroUIProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <HashRouter>
             <Navigation />
               <Routes>
                 <Route path="/" element={<HomePage />} />
@@ -21,7 +21,7 @@ export function App() {
                 <Route path="/user/:id" element={<UserPage />} />
                 <Route path="/user/:id/profile" element={<ProfilePage />} />
               </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </AuthProvider>
     </HeroUIProvider>
   );
