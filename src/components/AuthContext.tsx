@@ -1,7 +1,36 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
+
+// --- Interfaces ---
+
+export interface User {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  address?: {
+    street: string;
+    suite: string;
+    city: string;
+    zipcode: string;
+  };
+  website?: string;
+  company?: {
+    name: string;
+    catchPhrase: string;
+  };
+}
+
+export interface Post {
+  id: number;
+  userId: number;
+  title: string;
+  body: string;
+}
+
+// --- Types du Contexte ---
 
 interface AuthContextType {
-  user: any | null;
+  user: User | null;
   token: string | null;
   login: (email: string) => Promise<void>;
   logout: () => void;
@@ -10,18 +39,19 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// --- Provider ---
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [loading, setLoading] = useState(false);
 
-  // Simulation d'une connexion via JSONPlaceholder
+  // Connexion via JSONPlaceholder
   const login = async (email: string) => {
     setLoading(true);
     try {
-      // On cherche l'utilisateur par son email
       const response = await fetch(`https://jsonplaceholder.typicode.com/users?email=${email}`);
-      const data = await response.json();
+      const data: User[] = await response.json();
 
       if (data.length > 0) {
         const fakeToken = "JWT_FAKE_TOKEN_" + Math.random().toString(36).substring(7);
@@ -31,6 +61,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         throw new Error("Utilisateur non trouvé");
       }
+    } catch (error) {
+      console.error("Erreur lors de la connexion :", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -49,8 +82,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// --- Hook personnalisé ---
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth doit être dans un AuthProvider");
+  if (!context) {
+    throw new Error("useAuth doit être utilisé à l'intérieur d'un AuthProvider");
+  }
   return context;
 };
