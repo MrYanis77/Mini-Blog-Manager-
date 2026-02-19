@@ -1,69 +1,140 @@
-import { createContext, useContext, useState,type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
-// --- Interfaces ---
+// --- INTERFACES ---
+
+export interface Address {
+  address: string;
+  city: string;
+  state: string;
+  stateCode: string;
+  postalCode: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  country: string;
+}
 
 export interface User {
-  phone: ReactNode;
   id: number;
-  name: string;
   username: string;
   email: string;
-  address?: {
-    street: string;
-    suite: string;
-    city: string;
-    zipcode: string;
-  };
-  website?: string;
-  company?: {
-    name: string;
-    catchPhrase: string;
-  };
+  firstName: string;
+  lastName: string;
+  gender: string;
+  image: string;
+  birthDate: string;
+  phone: string;
+  address: Address;
 }
 
 export interface Post {
   id: number;
-  userId: number;
   title: string;
   body: string;
+  userId: number;
+  tags: string[];
+  reactions: {
+    likes: number;
+    dislikes: number;
+  };
 }
 
-// --- Types du Contexte ---
+// --- AJOUT DE L'INTERFACE RECIPE ---
+export interface Recipe {
+  id: number;
+  name: string;
+  ingredients: string[];
+  instructions: string[];
+  prepTimeMinutes: number;
+  cookTimeMinutes: number;
+  servings: number;
+  difficulty: "Easy" | "Medium" | "Hard";
+  cuisine: string;
+  caloriesPerServing: number;
+  tags: string[];
+  userId: number;
+  image: string;
+  rating: number;
+  reviewCount: number;
+  mealType: string[];
+}
 
 interface AuthContextType {
   user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   token: string | null;
-  login: (email: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// --- CONTEXT ---
 
-// --- Provider ---
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Connexion via JSONPlaceholder
-  const login = async (email: string) => {
+  useEffect(() => {
+    const checkUser = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch('https://dummyjson.com/auth/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`, 
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data);
+        } else {
+          logout();
+        }
+      } catch (error) {
+        console.error("Erreur de récupération utilisateur:", error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUser();
+  }, [token]);
+
+  const login = async (username: string, password: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/users?email=${email}`);
-      const data: User[] = await response.json();
+      const response = await fetch('https://dummyjson.com/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          password,
+          expiresInMins: 60,
+        }),
+      });
 
-      if (data.length > 0) {
-        const fakeToken = "JWT_FAKE_TOKEN_" + Math.random().toString(36).substring(7);
-        setUser(data[0]);
-        setToken(fakeToken);
-        localStorage.setItem('token', fakeToken);
+      const data = await response.json();
+
+      if (response.ok) {
+        const { token: accessToken, ...userDetails } = data;
+        setUser(userDetails as User);
+        setToken(accessToken);
+        localStorage.setItem('token', accessToken);
       } else {
-        throw new Error("Utilisateur non trouvé");
+        throw new Error(data.message || "Identifiants invalides");
       }
     } catch (error) {
-      console.error("Erreur lors de la connexion :", error);
+      console.error("Erreur login:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -77,13 +148,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, setUser, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-// --- Hook personnalisé ---
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

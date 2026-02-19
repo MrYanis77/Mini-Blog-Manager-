@@ -6,7 +6,7 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Si l'utilisateur n'est pas connecté, on affiche un état vide ou on redirige
+  // Si l'utilisateur n'est pas connecté
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -20,10 +20,10 @@ export default function ProfilePage() {
     <div className="max-w-4xl mx-auto p-6 animate-in fade-in duration-500">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <User
-          name={user.name}
+          name={`${user.firstName} ${user.lastName}`}
           description={`@${user.username}`}
           avatarProps={{
-            src: `https://i.pravatar.cc/150?u=${user.id}`,
+            src: user.image, // Utilise l'image de DummyJSON
             size: "lg",
             isBordered: true,
             color: "primary"
@@ -33,13 +33,15 @@ export default function ProfilePage() {
             description: "text-primary font-medium"
           }}
         />
+        <Chip color="primary" variant="flat" size="lg">ID: #{user.id}</Chip>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
         {/* --- Informations Personnelles --- */}
         <Card className="border-none bg-default-50 shadow-sm">
           <CardHeader className="flex gap-2">
-            <p className="font-bold">Contact & Réseaux</p>
+            <p className="font-bold">Contact & Identité</p>
           </CardHeader>
           <Divider />
           <CardBody className="gap-4">
@@ -48,65 +50,73 @@ export default function ProfilePage() {
               <p className="text-sm">{user.email}</p>
             </div>
             <div className="flex flex-col">
-              <span className="text-tiny uppercase text-default-400 font-bold">Site Web</span>
-              <p className="text-sm text-primary underline">{user.website}</p>
+              <span className="text-tiny uppercase text-default-400 font-bold">Téléphone</span>
+              <p className="text-sm">{user.phone}</p>
             </div>
             <div className="flex flex-col">
-              <span className="text-tiny uppercase text-default-400 font-bold">Téléphone</span>
-              <p className="text-sm text-primary underline">{user.phone}</p>
+              <span className="text-tiny uppercase text-default-400 font-bold">Date de naissance</span>
+              <p className="text-sm">{user.birthDate}</p>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-tiny uppercase text-default-400 font-bold">Genre</span>
+              <p className="text-sm capitalize">{user.gender}</p>
             </div>
           </CardBody>
         </Card>
 
-        {/* --- Entreprise --- */}
+        {/* --- Localisation --- */}
         <Card className="border-none bg-default-50 shadow-sm">
-          <CardHeader className="flex gap-2">
-            <p className="font-bold">Entreprise</p>
+          <CardHeader className="flex justify-between items-center">
+            <p className="font-bold">Adresse</p>
+            <Chip size="sm" variant="dot" color="success">Domicile</Chip>
           </CardHeader>
           <Divider />
           <CardBody className="gap-4">
             <div className="flex flex-col">
-              <span className="text-tiny uppercase text-default-400 font-bold">Nom</span>
-              <p className="text-sm font-semibold">{user.company?.name}</p>
+              <span className="text-tiny uppercase text-default-400 font-bold">Rue</span>
+              {/* Utilisation de ?. pour éviter le crash si address est undefined */}
+              <p className="text-sm">{user.address?.address || "Non renseignée"}</p>
             </div>
             <div className="flex flex-col">
-              <span className="text-tiny uppercase text-default-400 font-bold">Slogan</span>
-              <p className="text-sm italic text-default-500">"{user.company?.catchPhrase}"</p>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* --- Adresse --- */}
-        <Card className="border-none bg-default-50 shadow-sm md:col-span-2">
-          <CardHeader className="flex justify-between items-center">
-            <p className="font-bold">Localisation</p>
-            <Chip size="sm" variant="dot" color="success">Vérifié</Chip>
-          </CardHeader>
-          <Divider />
-          <CardBody className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <span className="text-tiny uppercase text-default-400 font-bold">Rue</span>
-              <p className="text-sm">{user.address?.street}, {user.address?.suite}</p>
-            </div>
-            <div>
               <span className="text-tiny uppercase text-default-400 font-bold">Ville</span>
-              <p className="text-sm">{user.address?.city}</p>
+              <p className="text-sm">
+                {user.address?.city ? `${user.address.city}, ${user.address.stateCode || ''}` : "Ville inconnue"}
+              </p>
             </div>
-            <div>
-              <span className="text-tiny uppercase text-default-400 font-bold">Code Postal</span>
-              <p className="text-sm">{user.address?.zipcode}</p>
+            <div className="flex flex-col">
+              <span className="text-tiny uppercase text-default-400 font-bold">Pays</span>
+              <p className="text-sm">{user.address?.country || "Non renseigné"}</p>
             </div>
+            {/* Vérification complète pour les coordonnées */}
+            {user.address?.coordinates && (
+              <div className="flex flex-col">
+                <span className="text-tiny uppercase text-default-400 font-bold">Coordonnées</span>
+                <p className="text-xs text-default-500">
+                  Lat: {user.address.coordinates.lat} / Lng: {user.address.coordinates.lng}
+                </p>
+              </div>
+            )}
           </CardBody>
         </Card>
       </div>
 
-      <footer className="mt-12 text-center">
+      <footer className="mt-12 text-center flex justify-center gap-4">
         <Button 
-          variant="light" 
+          variant="flat" 
           color="primary" 
           onPress={() => navigate(`/user/${user.id}`)}
         >
-          Gérer mes Posts →
+          Voir mes publications
+        </Button>
+        <Button 
+          variant="light" 
+          color="danger" 
+          onPress={() => {
+            // Tu peux ajouter ici une fonction de logout si nécessaire
+            navigate("/Login");
+          }}
+        >
+          Déconnexion
         </Button>
       </footer>
     </div>

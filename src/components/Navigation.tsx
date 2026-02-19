@@ -25,12 +25,11 @@ export default function Navigation() {
   const { user, logout } = useAuth();
 
   const categories = [
-    { key: "tech", label: "Tech", desc: "Gadgets et logiciels" },
-    { key: "lifestyle", label: "Lifestyle", desc: "Mode et bien-être" },
-    { key: "gaming", label: "Gaming", desc: "Jeux et consoles" },
-    { key: "voyage", label: "Voyage", desc: "Destinations de rêve" },
-    { key: "cuisine", label: "Cuisine", desc: "Recettes gourmandes" },
+    { key: "recipes", label: "Recettes", desc: "Plats et gourmandises", color: "bg-orange-500/10 text-orange-600" },
+    { key: "evasion", label: "Évasion", desc: "Voyage et mystère", color: "" },
+    { key: "Inspiration", label: "Inspration", desc: "Nature et aventure", color: "" },
   ];
+
 
   return (
     <Navbar onMenuOpenChange={setIsMenuOpen} isBordered maxWidth="xl" className="bg-background/70 backdrop-blur-md">
@@ -108,7 +107,6 @@ export default function Navigation() {
                   as="button"
                   className="transition-transform"
                   color="primary"
-                  name={user.name}
                   size="sm"
                   src={`https://i.pravatar.cc/150?u=${user.id}`}
                 />
@@ -121,7 +119,7 @@ export default function Navigation() {
                 <DropdownItem key="profile" onClick={() => navigate(`/user/${user.id}/profile`)}>
                   Mon Profil
                 </DropdownItem>
-                <DropdownItem key="my-posts">
+                <DropdownItem key="my-posts" onClick={() => navigate(`/user/${user.id}/paramètre`)}>
                   Paramètres
                 </DropdownItem>
                 <DropdownItem key="logout" color="danger" onClick={() => { logout(); navigate("/"); }}>

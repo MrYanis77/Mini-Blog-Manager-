@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
-import { useNavigate } from 'react-router-dom'; // Import du hook de redirection
+import { useNavigate } from 'react-router-dom';
 import { 
   Card, 
   CardHeader, 
   CardBody, 
   Input, 
-  Button 
+  Button
 } from '@heroui/react';
 
 export const LoginPage = () => {
-  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   
   const { login, user, loading } = useAuth();
-  const navigate = useNavigate(); // Initialisation de la navigation
+  const navigate = useNavigate();
 
-  // Sécurité : Si l'utilisateur est déjà connecté, on le redirige immédiatement
+  // Redirection automatique une fois le profil chargé
   useEffect(() => {
     if (user) {
       navigate(`/user/${user.id}`);
@@ -29,11 +29,11 @@ export const LoginPage = () => {
     setError('');
     
     try {
-      // On attend la fin de la connexion
-      await login(email);
-      // La redirection se fera via le useEffect ci-dessus une fois que 'user' sera mis à jour
-    } catch (err) {
-      setError("Identifiants inconnus. Indice : Sincere@april.biz");
+      // login() va maintenant tenter l'auth ET la récupération du profil complet
+      await login(username, password);
+    } catch (err: any) {
+      // Gestion précise du message d'erreur
+      setError(err.message || "Identifiants incorrects ou erreur serveur.");
     }
   };
 
@@ -42,16 +42,22 @@ export const LoginPage = () => {
       <Card className="w-full max-w-[450px] shadow-2xl border-none bg-background/60 backdrop-blur-md">
         <CardHeader className="flex flex-col gap-1 p-8 pb-0">
           <h2 className="text-2xl font-black">Connexion</h2>
-          <p className="text-default-500 text-sm">Accédez à votre espace blog</p>
+          <p className="text-default-500 text-sm">Accédez à votre profil complet</p>
         </CardHeader>
 
-        <CardBody className="p-8">
+        <CardBody className="p-8 gap-4">
+          {/* Alerte si l'appel au profil complet (auth/me) a échoué */}
+          {error && (
+            <div className="bg-danger-50 text-danger-600 p-3 rounded-medium text-xs font-medium border border-danger-100">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <Input
               isRequired
               type="text"
               label="Nom d'utilisateur"
-              placeholder="Ex: Bret"
               variant="bordered"
               value={username}
               onValueChange={setUsername}
@@ -61,16 +67,13 @@ export const LoginPage = () => {
 
             <Input
               isRequired
-              type="email"
-              label="Email"
-              placeholder="Ex: Sincere@april.biz"
+              type="password"
+              label="Mot de passe"
               variant="bordered"
-              value={email}
-              onValueChange={setEmail}
+              value={password}
+              onValueChange={setPassword}
               labelPlacement="outside"
               classNames={{ label: "font-bold" }}
-              isInvalid={!!error}
-              errorMessage={error}
             />
 
             <Button 
@@ -81,13 +84,10 @@ export const LoginPage = () => {
               isLoading={loading}
               fullWidth
             >
-              Se connecter
+              {loading ? "Chargement du profil..." : "Se connecter"}
             </Button>
           </form>
           
-          <p className="text-center text-xs text-default-400 mt-6 italic">
-            Utilisez les données de JSONPlaceholder pour tester.
-          </p>
         </CardBody>
       </Card>
     </div>

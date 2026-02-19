@@ -10,36 +10,41 @@ import {
   Listbox,
   ListboxItem
 } from "@heroui/react";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
-  const categories = [
-    { key: "tech", label: "Tech", desc: "Gadgets et logiciels", color: "bg-default-200" },
-    { key: "lifestyle", label: "Lifestyle", desc: "Mode et bien-être", color: "" },
-    { key: "gaming", label: "Gaming", desc: "Jeux et consoles", color: "" },
-    { key: "voyage", label: "Voyage", desc: "Destinations de rêve", color: "" },
-    { key: "cuisine", label: "Cuisine", desc: "Recettes gourmandes", color: "" },
+  const navigate = useNavigate();
+
+  // Tes catégories principales simplifiées
+  const mainCategories = [
+    { key: "recipes", label: "Recettes", desc: "Plats et gourmandises", color: "text-orange-500" },
+    { key: "evasion", label: "Évasion", desc: "Voyage et mystère", color: "text-blue-500" },
+    { key: "inspiration", label: "Inspiration", desc: "Nature et aventure", color: "text-green-500" },
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6 md:p-12">
       <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* --- Sidebar Gauche (Inspirée de ton image) --- */}
+        {/* --- SIDEBAR GAUCHE --- */}
         <aside className="lg:col-span-3">
-          <div className="sticky top-12 space-y-8">
+          <div className="sticky top-12 space-y-10">
+            
+            {/* 1. Catégories Principales */}
             <div>
-              <h2 className="text-2xl font-black mb-6 tracking-tight">EXPLORER</h2>
+              <h2 className="text-xl font-black mb-4 tracking-tighter italic uppercase opacity-50">Explorer</h2>
               <Listbox 
-                aria-label="Catégories du blog"
+                aria-label="Catégories"
                 variant="flat"
                 className="p-0 gap-2"
+                onAction={(key) => navigate(`/category/${key}`)}
                 itemClasses={{
-                  base: "px-4 py-3 rounded-xl data-[hover=true]:bg-default-100",
-                  title: "text-lg font-bold",
-                  description: "text-default-400"
+                  base: "px-4 py-3 rounded-2xl data-[hover=true]:bg-default-100 transition-all",
+                  title: "text-lg font-black uppercase italic",
+                  description: "text-default-400 font-medium"
                 }}
               >
-                {categories.map((cat) => (
+                {mainCategories.map((cat) => (
                   <ListboxItem 
                     key={cat.key} 
                     description={cat.desc}
@@ -51,56 +56,80 @@ export default function HomePage() {
               </Listbox>
             </div>
 
-            {/* Newsletter simplifiée */}
-            <Card className="bg-primary text-primary-foreground p-4 border-none" shadow="sm">
-              <CardBody className="gap-3">
-                <p className="font-bold">Hebdo Mag</p>
-                <p className="text-xs opacity-80">Reçois le meilleur du blog chaque lundi.</p>
-                <Input size="sm" placeholder="Email..." variant="bordered" className="bg-white/10 rounded-lg" />
-                <Button size="sm" className="bg-white text-primary font-bold">S'abonner</Button>
+            {/* 2. Newsletter */}
+            <Card className="bg-primary text-primary-foreground p-2 border-none shadow-xl shadow-primary/20" shadow="none">
+              <CardBody className="gap-4">
+                <div className="space-y-1">
+                  <p className="font-black uppercase italic text-xl leading-none">Hebdo Mag</p>
+                  <p className="text-[10px] font-bold opacity-80 uppercase tracking-widest">Le meilleur du blog</p>
+                </div>
+                <Input 
+                  size="sm" 
+                  placeholder="Ton email..." 
+                  variant="flat" 
+                  className="bg-white/10 rounded-xl"
+                  classNames={{ input: "placeholder:text-white/50 text-white" }}
+                />
+                <Button size="md" className="bg-white text-primary font-black uppercase italic">
+                  S'abonner
+                </Button>
               </CardBody>
             </Card>
           </div>
         </aside>
 
-        {/* --- Flux Principal d'Articles --- */}
+        {/* --- FLUX PRINCIPAL --- */}
         <div className="lg:col-span-9 space-y-12">
           
           {/* Article à la une */}
           <section>
-            <Card className="w-full h-[450px] border-none group" isPressable>
+            <Card 
+              className="w-full h-[500px] border-none group overflow-hidden rounded-[40px]" 
+              isPressable
+              onPress={() => navigate('/category/recipes')}
+            >
               <Image
                 removeWrapper
                 alt="Main post"
-                className="z-0 w-full h-full object-cover group-hover:scale-105 transition-transform"
-                src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2000"
+                className="z-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2000"
               />
-              <CardFooter className="absolute bottom-0 z-10 bg-white/80 dark:bg-black/60 backdrop-blur-md border-t border-divider p-6 justify-between flex-col items-start">
-                <Chip size="sm" color="primary" className="mb-2">À la une</Chip>
-                <h3 className="text-2xl md:text-3xl font-bold mb-2 text-left">
-                  Le futur du Gaming : Entre Cloud et Réalité Augmentée
+              <CardFooter className="absolute bottom-0 z-10 bg-white/90 dark:bg-black/80 backdrop-blur-xl border-t border-divider p-8 justify-between flex-col items-start translate-y-2 group-hover:translate-y-0 transition-transform">
+                <Chip size="sm" color="warning" className="mb-4 font-black uppercase italic px-4 text-white">À la une</Chip>
+                <h3 className="text-3xl md:text-4xl font-black mb-4 text-left leading-none uppercase italic tracking-tighter">
+                  Le secret des pâtes fraîches : La recette de la Nonna
                 </h3>
-                <User 
-                  name="Marc Tech" 
-                  description="Il y a 2 heures" 
-                  avatarProps={{ src: "https://i.pravatar.cc/150?u=tech" }}
-                />
+                <div className="flex justify-between w-full items-center">
+                  <User 
+                    name={<span className="font-bold uppercase italic">Chef Marco</span>}
+                    description="Gastronomie Italienne" 
+                    avatarProps={{ src: "https://i.pravatar.cc/150?u=chef", className: "w-10 h-10" }}
+                  />
+                  <span className="text-xs font-black text-primary uppercase bg-primary/10 px-3 py-1 rounded-full">
+                    Voir la recette
+                  </span>
+                </div>
               </CardFooter>
             </Card>
           </section>
 
           {/* Grille d'articles */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <BlogCard 
-              tag="Voyage" 
-              title="10 spots secrets au Japon" 
-              img="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800"
-            />
-            <BlogCard 
-              tag="Cuisine" 
-              title="Le secret du Ramen parfait" 
-              img="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800"
-            />
+          <section>
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-8">Dernières pépites</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <BlogCard 
+                tag="Mysterious" 
+                title="Les secrets enfouis du vieux Paris" 
+                img="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800"
+                category="evasion"
+              />
+              <BlogCard 
+                tag="Adventure" 
+                title="Seul face à la nature sauvage" 
+                img="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800"
+                category="inspiration"
+              />
+            </div>
           </section>
         </div>
       </main>
@@ -108,22 +137,36 @@ export default function HomePage() {
   );
 }
 
-/* --- Composant Carte Article --- */
-const BlogCard = ({ tag, title, img }: { tag: string; title: string; img: string }) => (
-  <Card className="border-none bg-transparent shadow-none group cursor-pointer">
-    <div className="relative overflow-hidden rounded-2xl mb-4">
-      <Image 
-        src={img} 
-        alt={title} 
-        className="w-full aspect-[4/3] object-cover group-hover:scale-110 transition-transform duration-500"
-      />
-      <Chip className="absolute top-3 left-3 z-10 backdrop-blur-md bg-white/20 text-white border-none" size="sm">
-        {tag}
-      </Chip>
-    </div>
-    <h4 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors">
-      {title}
-    </h4>
-    <p className="text-default-400 text-sm mt-2">5 min de lecture • 14 Commentaires</p>
-  </Card>
-);
+const BlogCard = ({ tag, title, img, category }: { tag: string; title: string; img: string; category: string }) => {
+  const navigate = useNavigate();
+
+  return (
+    <Card 
+      className="border-none bg-transparent shadow-none group cursor-pointer"
+      isPressable
+      onPress={() => navigate(`/category/${category}`)}
+    >
+      <div className="relative overflow-hidden rounded-[32px] mb-6">
+        <Image 
+          src={img} 
+          alt={title} 
+          className="w-full aspect-[16/10] object-cover group-hover:scale-110 transition-transform duration-700"
+        />
+        <div className="absolute top-4 left-4 z-20">
+          <Chip className="font-black uppercase italic bg-white/90 text-black border-none shadow-lg" size="sm">
+            {tag}
+          </Chip>
+        </div>
+      </div>
+      <h4 className="text-2xl font-black leading-tight uppercase italic tracking-tighter group-hover:text-primary transition-colors">
+        {title}
+      </h4>
+      <div className="flex items-center gap-3 mt-4">
+        <div className="w-8 h-[2px] bg-primary" />
+        <p className="text-default-400 text-[10px] font-black uppercase tracking-widest italic">
+          Lire la suite →
+        </p>
+      </div>
+    </Card>
+  );
+};

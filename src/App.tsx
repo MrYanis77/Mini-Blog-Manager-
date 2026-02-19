@@ -7,6 +7,8 @@ import { LoginPage } from './pages/LoginPage';
 import PostsPage from './pages/PostsPage';
 import UserPage from './pages/UserPage';
 import ProfilePage from './pages/ProfilePage';
+import ParametrePage from './pages/ParametrePage';
+import CategoryPage from './components/CategoryPage';
 
 export function App() {
   return (
@@ -20,6 +22,8 @@ export function App() {
                 <Route path="/blog" element={<PostsPage />} />
                 <Route path="/user/:id" element={<UserPage />} />
                 <Route path="/user/:id/profile" element={<ProfilePage />} />
+                <Route path="/user/:id/paramètre" element={<ParametrePage />} />
+                <Route path="/category/:id" element={<CategoryPage />} />
               </Routes>
         </HashRouter>
       </AuthProvider>
