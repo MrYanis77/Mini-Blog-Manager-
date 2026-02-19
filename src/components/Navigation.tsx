@@ -5,7 +5,6 @@ import {
   NavbarItem,
   NavbarMenuToggle,
   NavbarMenu,
-  NavbarBrand,
   NavbarMenuItem,
   Button,
   DropdownItem,
@@ -150,7 +149,7 @@ export default function Navigation() {
               </DropdownMenu>
             </Dropdown>
           ) : (
-            <Button as={RouterLink} to="/Login" color="black" variant="flat" className="text-sm font-bold">
+            <Button as={RouterLink} to="/Login" color="primary" variant="flat" className="text-sm font-bold">
               Connexion
             </Button>
           )}

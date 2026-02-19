@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { 
-  Card, CardBody, CardHeader, 
+  Card, CardBody, 
   Input, Button, Divider, 
-  Avatar, Badge, Chip,
+  Avatar, Badge,
   Tabs, Tab
 } from "@heroui/react";
-import { useAuth } from "../components/AuthContext";
+import { useAuth, type User } from "../components/AuthContext"; // Import de User pour le typage
 import { useNavigate } from "react-router-dom";
 
 export default function ParametrePage() {
@@ -13,7 +13,6 @@ export default function ParametrePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // État local synchronisé avec l'utilisateur actuel
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
@@ -32,9 +31,8 @@ export default function ParametrePage() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // Simulation d'appel API vers DummyJSON
       const response = await fetch(`https://dummyjson.com/users/${user?.id}`, {
-        method: 'PUT', // ou PATCH
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
@@ -42,16 +40,16 @@ export default function ParametrePage() {
       if (response.ok) {
         const updatedData = await response.json();
         
-        // Mise à jour de l'état global dans le Context
-        // Note: On fusionne avec les données existantes au cas où DummyJSON n'envoie pas tout
         if (setUser) {
-          setUser({ ...user, ...formData } as any);
+          // Utilisation de updatedData pour garantir la synchronisation avec le serveur
+          setUser({ ...user, ...updatedData } as User);
         }
         
-        alert("Paramètres mis à jour avec succès (simulation) !");
+        alert("Paramètres mis à jour avec succès !");
       }
     } catch (error) {
       console.error("Erreur mise à jour:", error);
+      alert("Une erreur est survenue lors de la mise à jour.");
     } finally {
       setLoading(false);
     }
@@ -65,7 +63,6 @@ export default function ParametrePage() {
 
       <div className="flex flex-col md:flex-row gap-8">
         
-        {/* --- Colonne Gauche : Avatar --- */}
         <div className="flex flex-col items-center gap-4">
           <Badge content="Éditer" color="primary" placement="bottom-right" shape="circle" className="cursor-pointer">
             <Avatar 
@@ -80,11 +77,9 @@ export default function ParametrePage() {
           </div>
         </div>
 
-        {/* --- Colonne Droite : Formulaires --- */}
         <div className="flex-1">
           <Tabs aria-label="Options" color="primary" variant="underlined" classNames={{ tabList: "gap-6", cursor: "w-full" }}>
             
-            {/* Onglet 1: Profil */}
             <Tab key="profile" title="Identité">
               <Card className="border-none shadow-none bg-transparent">
                 <CardBody className="gap-4 px-0 py-4">
@@ -126,7 +121,6 @@ export default function ParametrePage() {
               </Card>
             </Tab>
 
-            {/* Onglet 2: Adresse */}
             <Tab key="address" title="Adresse & Localisation">
               <Card className="border-none shadow-none bg-transparent">
                 <CardBody className="gap-4 px-0 py-4">
@@ -176,7 +170,7 @@ export default function ParametrePage() {
           <Divider className="my-6" />
 
           <div className="flex gap-3 justify-end">
-            <Button variant="flat" onPress={() => navigate("/Profile")}>
+            <Button variant="flat" onPress={() => navigate(`/user/${user.id}/profile`)}>
               Annuler
             </Button>
             <Button 

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Spinner, Button, Chip, Image } from "@heroui/react";
+import { Spinner, Button, Image } from "@heroui/react";
 import type { Post, Recipe } from "./AuthContext";
 
 export default function CategoryPage() {
