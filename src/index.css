@@ -3,3 +3,37 @@
 /* Note: You may need to change the path to fit your project structure */
 @source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 @custom-variant dark (&:is(.dark *));
+
+@layer base {
+  :root {
+    /* Dominante (Bleu pâle) : #F0F4F8 -> 210 33% 96% */
+    --background: 210 33% 96%;
+    /* On utilise le Bleu océan foncé pour le texte pour rester dans le thème */
+    --foreground: 200 82% 15%; 
+    
+    /* Secondaire (Bleu océan) : #0077B6 -> 200 100% 36% */
+    --secondary: 200 100% 36%;
+    
+    /* Accent (Corail) : #FF7F50 -> 16 100% 66% */
+    --primary: 16 100% 66%; 
+    
+    --card: 0 0% 100%;
+    --divider: 200 100% 36% / 0.1;
+  }
+
+  .dark {
+    /* Mode sombre : Bleu nuit profond */
+    --background: 200 100% 8%; 
+    --foreground: 210 33% 96%;
+    --primary: 16 100% 66%; 
+    --secondary: 200 80% 45%;
+    --card: 200 100% 12%;
+  }
+}
+
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-secondary: hsl(var(--secondary));
+}

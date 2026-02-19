@@ -66,9 +66,15 @@ export default function HomePage() {
                 <Input 
                   size="sm" 
                   placeholder="Ton email..." 
-                  variant="flat" 
-                  className="bg-white/10 rounded-xl"
-                  classNames={{ input: "placeholder:text-white/50 text-white" }}
+                  // On retire variant="flat" qui force un gris transparent
+                  variant="bordered" 
+                  classNames={{
+                    // On définit le style du conteneur (fond blanc opaque)
+                    inputWrapper: "bg-white border-none group-data-[focus=true]:bg-white",
+                    // On définit la couleur du texte saisi (noir/bleu pour le contraste)
+                    input: "text-primary placeholder:text-primary/50 font-bold",
+                  }}
+                  className="rounded-xl"
                 />
                 <Button size="md" className="bg-white text-primary font-black uppercase italic">
                   S'abonner

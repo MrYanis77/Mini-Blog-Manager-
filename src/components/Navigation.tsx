@@ -5,6 +5,7 @@ import {
   NavbarItem,
   NavbarMenuToggle,
   NavbarMenu,
+  NavbarBrand,
   NavbarMenuItem,
   Button,
   DropdownItem,
@@ -17,19 +18,26 @@ import {
 } from "@heroui/react";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
+import { useTheme } from "next-themes"; // Import pour le thème
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  
+  // Gestion du thème
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  // Évite les erreurs d'hydratation (SSR)
+  React.useEffect(() => setMounted(true), []);
 
   const categories = [
     { key: "recipes", label: "Recettes", desc: "Plats et gourmandises", color: "bg-orange-500/10 text-orange-600" },
     { key: "evasion", label: "Évasion", desc: "Voyage et mystère", color: "" },
-    { key: "Inspiration", label: "Inspration", desc: "Nature et aventure", color: "" },
+    { key: "inspiration", label: "Inspiration", desc: "Nature et aventure", color: "" },
   ];
-
 
   return (
     <Navbar onMenuOpenChange={setIsMenuOpen} isBordered maxWidth="xl" className="bg-background/70 backdrop-blur-md">
@@ -55,7 +63,6 @@ export default function Navigation() {
           </Link>
         </NavbarItem>
 
-        {/* LIEN DYNAMIQUE : Mes Posts (visible seulement si connecté) */}
         {user && (
           <NavbarItem isActive={location.pathname === `/user/${user.id}`}>
             <Link 
@@ -96,8 +103,23 @@ export default function Navigation() {
         </Dropdown>
       </NavbarContent>
 
-      {/* --- Partie Droite : Auth --- */}
+      {/* --- Partie Droite : Thème + Auth --- */}
       <NavbarContent justify="end">
+        {/* BOUTON DARK MODE */}
+        <NavbarItem className="flex">
+          {mounted && (
+            <Button
+              isIconOnly
+              variant="flat"
+              // bg-foreground/text-background crée le contraste noir/blanc demandé
+              className="bg-foreground text-background font-black text-[10px] rounded-full w-10 h-10 transition-transform active:scale-90"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? "☀️" : "🌙"}
+            </Button>
+          )}
+        </NavbarItem>
+
         <NavbarItem>
           {user ? (
             <Dropdown placement="bottom-end">
@@ -112,14 +134,14 @@ export default function Navigation() {
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="Menu Profil" variant="flat">
-                <DropdownItem key="profile_header" className="h-14 gap-2">
+                <DropdownItem key="profile_header" className="h-14 gap-2 text-foreground">
                   <p className="font-semibold">Connecté en tant que</p>
                   <p className="font-semibold text-primary">{user.username}</p>
                 </DropdownItem>
                 <DropdownItem key="profile" onClick={() => navigate(`/user/${user.id}/profile`)}>
                   Mon Profil
                 </DropdownItem>
-                <DropdownItem key="my-posts" onClick={() => navigate(`/user/${user.id}/paramètre`)}>
+                <DropdownItem key="settings" onClick={() => navigate(`/user/${user.id}/paramètre`)}>
                   Paramètres
                 </DropdownItem>
                 <DropdownItem key="logout" color="danger" onClick={() => { logout(); navigate("/"); }}>
@@ -128,7 +150,7 @@ export default function Navigation() {
               </DropdownMenu>
             </Dropdown>
           ) : (
-            <Button as={RouterLink} to="/Login" color="primary" variant="flat" className="text-sm font-bold">
+            <Button as={RouterLink} to="/Login" color="black" variant="flat" className="text-sm font-bold">
               Connexion
             </Button>
           )}

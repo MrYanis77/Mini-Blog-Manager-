@@ -9,24 +9,27 @@ import UserPage from './pages/UserPage';
 import ProfilePage from './pages/ProfilePage';
 import ParametrePage from './pages/ParametrePage';
 import CategoryPage from './components/CategoryPage';
+import {ThemeProvider as NextThemesProvider} from "next-themes";
 
 export function App() {
   return (
     <HeroUIProvider>
-      <AuthProvider>
-        <HashRouter>
-            <Navigation />
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/Login" element={<LoginPage />} />
-                <Route path="/blog" element={<PostsPage />} />
-                <Route path="/user/:id" element={<UserPage />} />
-                <Route path="/user/:id/profile" element={<ProfilePage />} />
-                <Route path="/user/:id/paramètre" element={<ParametrePage />} />
-                <Route path="/category/:id" element={<CategoryPage />} />
-              </Routes>
-        </HashRouter>
-      </AuthProvider>
+      <NextThemesProvider attribute="class" defaultTheme="dark">
+        <AuthProvider>
+          <HashRouter>
+              <Navigation />
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/Login" element={<LoginPage />} />
+                  <Route path="/blog" element={<PostsPage />} />
+                  <Route path="/user/:id" element={<UserPage />} />
+                  <Route path="/user/:id/profile" element={<ProfilePage />} />
+                  <Route path="/user/:id/paramètre" element={<ParametrePage />} />
+                  <Route path="/category/:id" element={<CategoryPage />} />
+                </Routes>
+          </HashRouter>
+        </AuthProvider>
+      </NextThemesProvider> 
     </HeroUIProvider>
   );
 }
